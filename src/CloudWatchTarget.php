@@ -7,6 +7,8 @@ use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use yii\base\InvalidConfigException;
 use yii\log\Target;
 
+use function usort;
+
 class CloudWatchTarget extends Target
 {
     public const TIMESTAMP_INDEX = 3;
@@ -25,7 +27,7 @@ class CloudWatchTarget extends Target
         parent::__construct($config);
     }
 
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -38,16 +40,14 @@ class CloudWatchTarget extends Target
         }
     }
 
-    public function export()
+    public function export(): void
     {
         if (empty($this->messages)) {
             return;
         }
 
-        usort(
-            $this->messages,
-            fn ($a, $b) => $a[self::TIMESTAMP_INDEX] < $b[self::TIMESTAMP_INDEX] ? -1 : 1,
-        );
+        $this->sortMessages();
+
         $this->client->putLogEvents([
             'logEvents' => array_map([$this, 'formatLogEvent'], $this->messages),
             'logGroupName' => $this->group,
@@ -55,7 +55,15 @@ class CloudWatchTarget extends Target
         ]);
     }
 
-    public function formatLogEvent($message): array
+    private function sortMessages(): void
+    {
+        usort(
+            $this->messages,
+            fn ($a, $b) => $a[self::TIMESTAMP_INDEX] < $b[self::TIMESTAMP_INDEX] ? -1 : 1,
+        );
+    }
+
+    private function formatLogEvent($message): array
     {
         return [
             'message' => $this->formatMessage($message),
