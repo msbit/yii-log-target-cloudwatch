@@ -1,0 +1,12 @@
+{
+    "name": "msbit/yii-log-target-cloudwatch",
+    "autoload": {
+        "psr-4": {
+            "msbit\\log\\": "src"
+        }
+    },
+    "require": {
+        "aws/aws-sdk-php": "~3.283.7",
+        "yiisoft/yii2": "~2.0.48.1"
+    }
+}
