@@ -11,10 +11,10 @@ use function usort;
 
 class CloudWatchTarget extends Target
 {
-    public const TIMESTAMP_INDEX = 3;
-
     public ?string $group = null;
     public ?string $stream = null;
+
+    private const TIMESTAMP_INDEX = 3;
 
     private CloudWatchLogsClient $client;
 
